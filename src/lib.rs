@@ -188,13 +188,14 @@ impl StackDriverExporter {
 
 impl SpanExporter for StackDriverExporter {
     fn export(&self, batch: Vec<Arc<SpanData>>) -> ExportResult {
-        match self.tx.clone().start_send(batch) {
+        match self.tx.clone().try_send(batch) {
             Err(e) => {
-                log::error!(
-                    "Unable to send to export_inner; this should never occur {:?}",
-                    e
-                );
-                ExportResult::FailedNotRetryable
+                log::error!("Unable to send to export_inner {:?}", e);
+                if e.is_disconnected() {
+                    ExportResult::FailedNotRetryable
+                } else {
+                    ExportResult::FailedRetryable
+                }
             }
             _ => ExportResult::Success,
         }
