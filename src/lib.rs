@@ -21,7 +21,6 @@
 // https://github.com/danburkert/prost/pull/291
 
 use derivative::Derivative;
-use futures::sink::SinkExt;
 use futures::stream::StreamExt;
 use opentelemetry::api::core::Value;
 use opentelemetry::exporter::trace::{ExportResult, SpanData, SpanExporter};
@@ -189,7 +188,7 @@ impl StackDriverExporter {
 
 impl SpanExporter for StackDriverExporter {
     fn export(&self, batch: Vec<Arc<SpanData>>) -> ExportResult {
-        match futures::executor::block_on(self.tx.clone().send(batch)) {
+        match self.tx.clone().start_send(batch) {
             Err(e) => {
                 log::error!(
                     "Unable to send to export_inner; this should never occur {:?}",
@@ -244,18 +243,5 @@ mod tests {
             tokio::runtime::Handle::current().spawn(future);
             Ok(())
         }
-    }
-
-    #[test]
-    fn it_works() {
-        let mut rt = tokio::runtime::Runtime::new().unwrap();
-        // let tp = futures::executor::ThreadPool::new().unwrap();
-        // TODO: figure out how we want to do this test.
-        rt.block_on(StackDriverExporter::connect(
-            std::path::PathBuf::from("stuff.json"),
-            "fake-project",
-            &TokioSpawner,
-        ))
-        .unwrap();
     }
 }
