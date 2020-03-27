@@ -228,20 +228,3 @@ fn to_truncate(s: String) -> TruncatableString {
         ..Default::default()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    struct TokioSpawner;
-
-    impl futures::task::Spawn for TokioSpawner {
-        fn spawn_obj(
-            &self,
-            future: futures::future::FutureObj<'static, ()>,
-        ) -> Result<(), futures::task::SpawnError> {
-            tokio::runtime::Handle::current().spawn(future);
-            Ok(())
-        }
-    }
-}
