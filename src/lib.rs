@@ -25,7 +25,6 @@ use futures::stream::StreamExt;
 use opentelemetry::api::core::Value;
 use opentelemetry::exporter::trace::{ExportResult, SpanData, SpanExporter};
 use std::any::Any;
-use std::fs::read_to_string;
 use std::sync::{
     atomic::{AtomicUsize, Ordering},
     Arc,
@@ -82,16 +81,7 @@ impl StackDriverExporter {
         let uri = http::uri::Uri::from_static("https://cloudtrace.googleapis.com:443");
 
         let service_account_key = yup_oauth2::read_service_account_key(&credentials_path).await?;
-        let project_name =
-            serde_json::from_str::<serde_json::Value>(&read_to_string(&credentials_path)?)?
-                .as_object()
-                .ok_or("JSON in credentials_path is not an object")?
-                .get("project_id")
-                .ok_or("JSON in credentials_path does not have a project_id key")?
-                .as_str()
-                .ok_or("project_id key in credentials_path is not a string")?
-                .to_owned();
-
+        let project_name = service_account_key.project_id.as_ref().ok_or("project_id is missing")?.clone();
         let authenticator = yup_oauth2::ServiceAccountAuthenticator::builder(service_account_key)
             .build()
             .await?;

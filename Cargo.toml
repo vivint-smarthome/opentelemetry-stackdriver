@@ -32,7 +32,6 @@ opentelemetry = "0.2"
 prost = "0.6"
 prost-types = "0.6"
 rustls = "0.16"
-serde_json = "1.0"
 tonic = { version = "0.1", features = ["transport", "tls"] }
 yup-oauth2 = "4.1"
 webpki-roots = "0.19"
