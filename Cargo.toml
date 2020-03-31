@@ -39,4 +39,4 @@ webpki-roots = "0.19"
 
 [features]
 default = []
-tokio_adaptor = ["tokio"]
+tokio_adapter = ["tokio"]

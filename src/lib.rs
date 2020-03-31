@@ -59,8 +59,8 @@ use proto::google::devtools::cloudtrace::v2::span::TimeEvent;
 use proto::google::devtools::cloudtrace::v2::trace_service_client::TraceServiceClient;
 use proto::google::devtools::cloudtrace::v2::{AttributeValue, TruncatableString};
 
-#[cfg(feature = "tokio_adaptor")]
-pub mod tokio_adaptor;
+#[cfg(feature = "tokio_adapter")]
+pub mod tokio_adapter;
 
 /// Exports opentelemetry tracing spans to Google StackDriver.
 ///
