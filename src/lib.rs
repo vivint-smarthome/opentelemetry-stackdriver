@@ -76,14 +76,14 @@ pub struct StackDriverExporter {
 }
 
 impl StackDriverExporter {
-    /// If `num_concurrent_connections` is set to `0` or `None` then no limit is enforced.
+    /// If `num_concurrent_requests` is set to `0` or `None` then no limit is enforced.
     pub async fn connect<S: futures::task::Spawn>(
         credentials_path: impl AsRef<std::path::Path>,
         spawn: &S,
         maximum_shutdown_duration: Option<Duration>,
-        num_concurrent_connections: impl Into<Option<usize>>,
+        num_concurrent_requests: impl Into<Option<usize>>,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let num_concurrent_connections = num_concurrent_connections.into();
+        let num_concurrent_requests = num_concurrent_requests.into();
         let uri = http::uri::Uri::from_static("https://cloudtrace.googleapis.com:443");
 
         let service_account_key = yup_oauth2::read_service_account_key(&credentials_path).await?;
@@ -123,7 +123,7 @@ impl StackDriverExporter {
                 project_name,
                 rx,
                 pending_count.clone(),
-                num_concurrent_connections,
+                num_concurrent_requests,
             ))
             .into(),
         )?;
