@@ -24,14 +24,6 @@
 //! // about 1 hour.
 //! let persistent_token_file = Some("oauth_token.json");
 //!
-//! // The amount of time that you, the client, want to give to in-flight span export requests to
-//! // finish. If you specify `None`, then this defaults to 5 seconds.
-//! let maximum_shutdown_duration = Some(Duration::from_secs(10));
-//!
-//! // The number of span export requests that are allowed to be in-flight at once. If you specify
-//! // `None`, it defaults to 0, meaning, no limit will be enforced.
-//! let num_concurrent_requests = 2;
-//!
 //! // An implementation of `futures::task::Spawn`, which allows our `StackDriverExporter` to
 //! // run new tasks in an `async` runtime, as part of its work.
 //! let spawn = {
@@ -54,6 +46,14 @@
 //!     }
 //!   }
 //! };
+//!
+//! // The amount of time that you, the client, want to give to in-flight span export requests to
+//! // finish. If you specify `None`, then this defaults to 5 seconds.
+//! let maximum_shutdown_duration = Some(Duration::from_secs(10));
+//!
+//! // The number of span export requests that are allowed to be in-flight at once. If you specify
+//! // `None`, it defaults to 0, meaning, no limit will be enforced.
+//! let num_concurrent_requests = 2;
 //!
 //! // `StackDriverExporter`: the focal point of this API.
 //! //
