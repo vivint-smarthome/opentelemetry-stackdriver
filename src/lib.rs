@@ -63,6 +63,7 @@
 //!     persistent_token_file,
 //!     spawn,
 //!     maximum_shutdown_duration,
+//!     num_concurrent_requests,
 //! ).await;
 //!
 //! // An `opentelemetry::sdk::Provider` takes an implementation of `SpanExporter`, which our
