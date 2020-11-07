@@ -22,29 +22,31 @@
 //!
 //! // The path you want to persist an OAuth2 token. Generally, the lifetime of an OAuth2 token is
 //! // about 1 hour.
-//! let persistent_token_file = Some("oauth_token.json");
+//! let persistent_token_file = Some("oauth_token.json".into());
 //!
 //! // An implementation of `futures::task::Spawn`, which allows our `StackDriverExporter` to
 //! // run new tasks in an `async` runtime, as part of its work.
 //! let spawn = {
-//!   // Neither Tokio nor `async-std` provide APIs implementing `futures::task::Spawn`, but
-//!   // `opentelemetry-stackdriver` uses it because it's a useful abstraction over executor
-//!   // runtimes.
-//!   //
-//!   // https://github.com/tokio-rs/tokio/issues/2018
-//!   // https://github.com/async-rs/async-std/issues/142
-//!   pub struct TokioSpawner;
+//!     // Neither Tokio nor `async-std` provide APIs implementing `futures::task::Spawn`, but
+//!     // `opentelemetry-stackdriver` uses it because it's a useful abstraction over executor
+//!     // runtimes.
+//!     //
+//!     // https://github.com/tokio-rs/tokio/issues/2018
+//!     // https://github.com/async-rs/async-std/issues/142
+//!     pub struct TokioSpawner;
 //!
-//!   impl futures::task::Spawn for TokioSpawner {
-//!     fn spawn_obj(
-//!         &self,
-//!         future: futures::future::FutureObj<'static, ()>
-//!     ) -> Result<(), futures::task::SpawnError> {
-//!       // TODO: check that executor is active; return SpawnError if not.
-//!       tokio::runtime::Handle::current().spawn(future);
-//!       Ok(())
+//!     impl futures::task::Spawn for TokioSpawner {
+//!         fn spawn_obj(
+//!             &self,
+//!             future: futures::future::FutureObj<'static, ()>
+//!         ) -> Result<(), futures::task::SpawnError> {
+//!             // TODO: check that executor is active; return SpawnError if not.
+//!             tokio::runtime::Handle::current().spawn(future);
+//!             Ok(())
+//!         }
 //!     }
-//!   }
+//!
+//!     TokioSpawner
 //! };
 //!
 //! // The amount of time that you, the client, want to give to in-flight span export requests to
@@ -61,19 +63,22 @@
 //! let exporter = StackDriverExporter::connect(
 //!     credentials_path,
 //!     persistent_token_file,
-//!     spawn,
+//!     &spawn,
 //!     maximum_shutdown_duration,
 //!     num_concurrent_requests,
-//! ).await;
+//! ).await.unwrap();
 //!
 //! // An `opentelemetry::sdk::Provider` takes an implementation of `SpanExporter`, which our
 //! // `exporter` does.
-//! let provider = opentelemetry::sdk::Provider::builder()
-//!   // Other builder methods could be used for this too.
-//!   .with_simple_exporter(exporter)
-//!   .build()
-//!   // TODO: Change this name to something more meaningful.
-//!   .get_tracer("example"),
+//! let provider = {
+//!     use opentelemetry::api::Provider; // for `get_tracer` below
+//!     opentelemetry::sdk::Provider::builder()
+//!         // Other builder methods could be used for this too.
+//!         .with_simple_exporter(exporter)
+//!         .build()
+//!         // TODO: Change this name to something more meaningful.
+//!         .get_tracer("example")
+//! };
 //!
 //! // With our `Provider` instance, we can now start making the last remaining (simpler) steps
 //! // towards finally connecting to `tracing`. The target trait on the `tracing` side is
@@ -84,7 +89,7 @@
 //!
 //! // Wrap our `Provider` into a `tracing_subscriber::Layer` by leveraging
 //! // `tracing_opentelemetry`.
-//! let layer = tracing_opentelemetry::OpenTelemetryLayer::with_tracer(provider);
+//! let layer = tracing_opentelemetry::OpenTelemetryLayer::new(provider);
 //!
 //! // A `tracing_subscriber::Registry` is a local backing store for span data -- it
 //! let registry = tracing_subscriber::Registry::default();
@@ -103,7 +108,7 @@
 //!
 //! // ...and now we're ready to go! Start making `tracing::Span`s to your heart's content.
 //!
-//! use {std::thread::sleep, tracing::span};
+//! use {std::{thread::sleep, time::Duration}, tracing::{span, Level}};
 //! span!(Level::INFO, "example_span").in_scope(|| {
 //!     sleep(Duration::from_secs(2));
 //!     span!(Level::INFO, "example_child_span").in_scope(|| {
