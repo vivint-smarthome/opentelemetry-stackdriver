@@ -32,7 +32,8 @@
 //! // `None`, it defaults to 0, meaning, no limit will be enforced.
 //! let num_concurrent_requests = 2;
 //!
-//! // An implementation of `futures::task::Spawn`, which allows .
+//! // An implementation of `futures::task::Spawn`, which allows our `StackDriverExporter` to
+//! // run new tasks in an `async` runtime, as part of its work.
 //! let spawn = {
 //!   // Neither Tokio nor `async-std` provide APIs implementing `futures::task::Spawn`, but
 //!   // `opentelemetry-stackdriver` uses it because it's a useful abstraction over executor
