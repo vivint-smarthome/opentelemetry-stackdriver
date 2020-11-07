@@ -80,7 +80,7 @@
 //! // The easiest way to make a custom `Subscriber` implementation is to use the
 //! // `tracing_subscriber` crate as our toolkit.
 //!
-//! // Wrap our `Provider` into a `tracing_subscriber::Layer` by everaging
+//! // Wrap our `Provider` into a `tracing_subscriber::Layer` by leveraging
 //! // `tracing_opentelemetry`.
 //! let layer = tracing_opentelemetry::OpenTelemetryLayer::with_tracer(provider);
 //!
