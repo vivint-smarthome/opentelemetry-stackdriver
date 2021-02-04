@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["History","A description of the historical or future-looking state of the resource pattern."]]});

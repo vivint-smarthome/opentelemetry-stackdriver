@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AsService","Service returned by `MakeService::as_service`."],["IntoService","Service returned by `MakeService::into_service`."]],"trait":[["MakeConnection","The [`MakeConnection`] trait is used to create transports."],["MakeService","Creates new [`Service`] values."]]});
